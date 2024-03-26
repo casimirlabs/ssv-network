@@ -18,6 +18,11 @@ interface ISSVOperators is ISSVNetworkCore {
     /// @param whitelisted The address to be whitelisted
     function setOperatorWhitelist(uint64 operatorId, address whitelisted) external;
 
+    /// @notice Sets a whitelisting contract for an operator
+    /// @param operatorId The ID of the operator
+    /// @param whitelistingContract The address of a whitelisting contract
+    function setWhitelistingContract(uint64 operatorId, address whitelistingContract) external;
+
     /// @notice Declares the operator's fee
     /// @param operatorId The ID of the operator
     /// @param fee The fee to be declared (SSV)

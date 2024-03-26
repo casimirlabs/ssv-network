@@ -9,6 +9,6 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["./scripts", "./test"],
+  "include": ["./scripts", "./test", "test-forked/whitelisting.ts"],
   "files": ["./hardhat.config.ts"]
 }

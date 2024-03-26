@@ -139,6 +139,13 @@ contract SSVNetworkUpgrade is
         );
     }
 
+    function setWhitelistingContract(uint64 operatorId, address whitelistingContract) external override {
+        _delegateCall(
+            SSVStorage.load().ssvContracts[SSVModules.SSV_OPERATORS],
+            abi.encodeWithSignature("setWhitelistingContract(uint64,address)", operatorId, whitelistingContract)
+        );
+    }
+
     function declareOperatorFee(uint64 operatorId, uint256 fee) external override {
         _delegateCall(
             SSVStorage.load().ssvContracts[SSVModules.SSV_OPERATORS],

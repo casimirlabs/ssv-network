@@ -93,4 +93,9 @@ library OperatorLib {
             }
         }
     }
+
+    function getBitmapIndexes(uint64 operatorId) internal pure returns (uint256 blockIndex, uint256 bitPosition) {
+        blockIndex = operatorId >> 8; // Equivalent to operatorId / 256
+        bitPosition = operatorId & 0xFF; // Equivalent to operatorId % 256
+    }
 }

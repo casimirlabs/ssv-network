@@ -86,6 +86,8 @@ contract SSVOperatorsUpdate is ISSVOperators {
         emit OperatorWhitelistUpdated(operatorId, whitelisted);
     }
 
+    function setWhitelistingContract(uint64 operatorId, address whitelistingContract) external override {}
+
     function declareOperatorFee(uint64 operatorId, uint256 fee) external override {
         if (operatorId == 0 && fee == 0) revert NoFeeDeclared();
     }

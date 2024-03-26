@@ -15,4 +15,6 @@ jobs:
       - run: npm ci
         env:
           GH_TOKEN: ${{ secrets.github_token }}
+          INFURA_KEY: ${{ secrets.infura_key }}
       - run: npx hardhat test
+      - run: npx hardhat test test-forked/whitelisting.ts --network hardhat

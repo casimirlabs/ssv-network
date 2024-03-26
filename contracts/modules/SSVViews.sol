@@ -49,13 +49,60 @@ contract SSVViews is ISSVViews {
         );
     }
 
-    function getOperatorById(uint64 operatorId) external view returns (address, uint256, uint32, address, bool, bool) {
+    function getOperatorById(
+        uint64 operatorId
+    )
+        external
+        view
+        returns (
+            address owner,
+            uint256 fee,
+            uint32 validatorCount,
+            address whitelistingContract,
+            bool isPrivate,
+            bool isActive
+        )
+    {
         ISSVNetworkCore.Operator memory operator = SSVStorage.load().operators[operatorId];
-        address whitelisted = SSVStorage.load().operatorsWhitelist[operatorId];
-        bool isPrivate = whitelisted == address(0) ? false : true;
-        bool isActive = operator.snapshot.block == 0 ? false : true;
+        whitelistingContract = SSVStorage.load().operatorsWhitelist[operatorId];
+        isPrivate = operator.whitelisted;
+        isActive = operator.snapshot.block == 0 ? false : true;
 
-        return (operator.owner, operator.fee.expand(), operator.validatorCount, whitelisted, isPrivate, isActive);
+        return (
+            operator.owner,
+            operator.fee.expand(),
+            operator.validatorCount,
+            whitelistingContract,
+            isPrivate,
+            isActive
+        );
+    }
+
+    function checkAddressIsWhitelisted(
+        uint64 operatorId,
+        address whitelistedAddress
+    ) external view override returns (bool isWhitelisted, bool isWhitelistingContract) {
+        // Calculate the index of the uint256 block and the bit position for the operatorId
+        (uint256 blockIndex, uint256 bitPosition) = OperatorLib.getBitmapIndexes(operatorId);
+
+        // Retrieve the bitmap for the whitelistedAddress at the calculated block index
+        uint256 bitmap = SSVStorage.load().addressWhitelistedForOperators[whitelistedAddress][blockIndex];
+
+        // Check if the bit at the calculated position is set in the bitmap
+        // If the bit is set, it means the address is whitelisted for the operatorId
+        isWhitelisted = (bitmap & (1 << bitPosition)) != 0;
+
+        // Check if whitelistedAddress is whitelisted via operatorsWhitelist
+        // (EOA or whitelisting contract)
+        if (!isWhitelisted) {
+            address whitelisted = SSVStorage.load().operatorsWhitelist[operatorId];
+            if (whitelisted == whitelistedAddress) {
+                isWhitelisted = true;
+                if (CoreLib.isContract(whitelistedAddress)) {
+                    isWhitelistingContract = true;
+                }
+            }
+        }
     }
 
     /***********************************/

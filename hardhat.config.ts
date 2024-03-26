@@ -45,8 +45,11 @@ const config: HardhatUserConfig = {
       ssvToken: process.env.SSVTOKEN_ADDRESS, // if empty, deploy SSV mock token
     } as SSVNetworkConfig,
     hardhat: {
-      allowUnlimitedContractSize: true,
-      gas: 5000000,
+      forking: {
+        url: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
+        blockNumber: 19480000,
+      },
+      gas: 2000000,
     },
   },
   etherscan: {

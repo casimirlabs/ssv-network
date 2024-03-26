@@ -15,7 +15,8 @@ enum SSVModules {
 /// @title SSV Network Storage Data
 /// @notice Represents all operational state required by the SSV Network
 struct StorageData {
-    /// @notice Maps each validator's public key to its hashed representation of: operator Ids used by the validator and active / inactive flag (uses LSB)
+    /// @notice Maps each validator's public key to its hashed representation of: 
+    /// @notice operator Ids used by the validator and active / inactive flag (uses LSB)
     mapping(bytes32 => bytes32) validatorPKs;
     /// @notice Maps each cluster's bytes32 identifier to its hashed representation of ISSVNetworkCore.Cluster
     mapping(bytes32 => bytes32) clusters;
@@ -23,7 +24,7 @@ struct StorageData {
     mapping(bytes32 => uint64) operatorsPKs;
     /// @notice Maps each SSVModules' module to its corresponding contract address
     mapping(SSVModules => address) ssvContracts;
-    /// @notice Operators' whitelist: Maps each operator's ID to its corresponding whitelisted Ethereum address
+    /// @notice Operators' whitelist: Maps each operator's ID to a whitelisting contract (legacy: to a whitelisted EOA)
     mapping(uint64 => address) operatorsWhitelist;
     /// @notice Maps each operator's ID to its corresponding operator fee change request data
     mapping(uint64 => ISSVNetworkCore.OperatorFeeChangeRequest) operatorFeeChangeRequests;
@@ -33,10 +34,14 @@ struct StorageData {
     IERC20 token;
     /// @notice Counter keeping track of the last Operator ID issued
     Counters.Counter lastOperatorId;
+    /// @notice Operators' whitelist: Maps each whitelisted address to a list of operators 
+    /// @notice that are whitelisted for that address using bitmaps
+    /// @dev The nested mapping's key represents a uint256 slot to handle more than 256 operators per address
+    mapping(address => mapping(uint256 => uint256)) addressWhitelistedForOperators;
 }
 
 library SSVStorage {
-    uint256 constant private SSV_STORAGE_POSITION = uint256(keccak256("ssv.network.storage.main")) - 1;
+    uint256 private constant SSV_STORAGE_POSITION = uint256(keccak256("ssv.network.storage.main")) - 1;
 
     function load() internal pure returns (StorageData storage sd) {
         uint256 position = SSV_STORAGE_POSITION;

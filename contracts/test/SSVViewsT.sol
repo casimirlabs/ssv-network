@@ -62,6 +62,11 @@ contract SSVViewsT is ISSVViews {
         return (operator.owner, operator.fee.expand(), operator.validatorCount, whitelisted, isPrivate, isActive);
     }
 
+    function checkAddressIsWhitelisted(
+        uint64 operatorId,
+        address whitelistedAddress
+    ) external view override returns (bool isWhitelisted, bool isWhitelistingContract) {}
+
     /***********************************/
     /* Cluster External View Functions */
     /***********************************/
